@@ -2,31 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Image Extractor</title>
+  <title>Image Extractor Web App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-  <h2>Image Extractor Web App</h2>
-  <form id="extract-form">
-    <input type="text" name="parent_url" placeholder="Enter parent URL" required>
-    <button type="submit">Extract Images</button>
-  </form>
-  <div id="result"></div>
+<body class="bg-light text-center py-5">
+  <div class="container">
+    <h1 class="mb-4">🖼️ Image Extractor Web App</h1>
+    <form id="extract-form" class="row justify-content-center mb-4">
+      <div class="col-md-6">
+        <input type="text" name="parent_url" class="form-control" placeholder="Enter parent URL (e.g. https://example.com)" required>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Extract Images</button>
+      </div>
+    </form>
+    <div id="result" class="mt-4"></div>
+  </div>
 
   <script>
     document.getElementById("extract-form").onsubmit = async (e) => {
       e.preventDefault();
       const form = e.target;
       const formData = new FormData(form);
-      const response = await fetch("/extract", {
-        method: "POST",
-        body: formData
-      });
-      const result = await response.json();
-      document.getElementById("result").innerHTML = `
-        <p>✅ Extracted ${result.image_count} images.</p>
-        <p><a href="${result.csv_link}" target="_blank">Download CSV Metadata</a></p>
-        <p><a href="${result.images_link}" target="_blank">View Images in Dropbox</a></p>
-      `;
+
+      document.getElementById("result").innerHTML = "<p>⏳ Processing... Please wait.</p>";
+
+      try {
+        const response = await fetch("/extract", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+          document.getElementById("result").innerHTML = `
+            <div class="alert alert-success">
+              ✅ Extracted <strong>${result.image_count}</strong> images.<br>
+              <a href="${result.csv_link}" target="_blank" class="btn btn-outline-success mt-2">Download CSV Metadata</a>
+              <a href="${result.images_link}" target="_blank" class="btn btn-outline-info mt-2">View Images in Dropbox</a>
+            </div>
+          `;
+        } else {
+          document.getElementById("result").innerHTML = `<div class="alert alert-danger">❌ Error occurred.</div>`;
+        }
+      } catch (err) {
+        document.getElementById("result").innerHTML = `<div class="alert alert-danger">⚠️ Something went wrong. ${err.message}</div>`;
+      }
     };
   </script>
 </body>
