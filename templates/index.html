@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Image Extractor</title>
+</head>
+<body>
+  <h2>Image Extractor Web App</h2>
+  <form id="extract-form">
+    <input type="text" name="parent_url" placeholder="Enter parent URL" required>
+    <button type="submit">Extract Images</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById("extract-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const response = await fetch("/extract", {
+        method: "POST",
+        body: formData
+      });
+      const result = await response.json();
+      document.getElementById("result").innerHTML = `
+        <p>✅ Extracted ${result.image_count} images.</p>
+        <p><a href="${result.csv_link}" target="_blank">Download CSV Metadata</a></p>
+        <p><a href="${result.images_link}" target="_blank">View Images in Dropbox</a></p>
+      `;
+    };
+  </script>
+</body>
+</html>
