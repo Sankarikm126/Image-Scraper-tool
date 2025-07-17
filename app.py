@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, render_template, request, redirect, url_for, send_file, jsonify
+from flask import Flask, render_template, request, jsonify
 import os
 from utils.image_scraper import scrape_images_from_site
 from utils.csv_generator import generate_csv
