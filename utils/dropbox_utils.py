@@ -1,16 +1,14 @@
 import dropbox
-import json
+import os
 
-with open('config.json') as f:
-    config = json.load(f)
-
-dbx = dropbox.Dropbox(config['access_token'])
+access_token = os.environ['DROPBOX_TOKEN']
+dbx = dropbox.Dropbox(access_token)
 
 def create_dropbox_folder(path):
     try:
         dbx.files_create_folder_v2(path)
     except dropbox.exceptions.ApiError:
-        pass  # Folder may already exist
+        pass
 
 def upload_to_dropbox(local_path, dropbox_path):
     with open(local_path, 'rb') as f:
